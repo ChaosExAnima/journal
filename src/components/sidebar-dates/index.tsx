@@ -5,7 +5,6 @@ import {
 	IconButton,
 	List,
 	ListItem,
-	// ListItemIcon,
 	ListItemText,
 	ListSubheader,
 	makeStyles,
@@ -39,7 +38,9 @@ export default function SidebarDates( { startDate }: SidebarDatesProps ) {
 						component={ Paper }
 						className={ classes.subheader }
 					>
-						<ListItemText primary="Entries" />
+						<ListItemText
+							primary={ startDate.format( 'MMMM YYYY' ) }
+						/>
 						<IconButton color="primary">
 							<CalendarTodayIcon />
 						</IconButton>

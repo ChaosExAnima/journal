@@ -4,14 +4,15 @@ import {
 	makeStyles,
 	createStyles,
 	Container,
-	Button,
 	Box,
 	ThemeProvider,
 	createMuiTheme,
 	useMediaQuery,
 	CssBaseline,
+	InputBase,
+	Fab,
 } from '@material-ui/core';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import AddIcon from '@material-ui/icons/Add';
 import SidebarDates from 'components/sidebar-dates';
 import EntryHeader from 'components/entry-header';
 import { deepOrange, pink } from '@material-ui/core/colors';
@@ -31,13 +32,19 @@ const useStyles = makeStyles( ( theme ) =>
 			order: 0,
 			width: theme.breakpoints.values.sm / 3,
 			marginRight: theme.spacing( 2 ),
-			// backgroundColor: theme.palette.background.default,
+			overflowY: 'auto',
+		},
+		newButton: {
+			width: '100%',
+		},
+		newButtonIcon: {
+			marginLeft: theme.spacing( 1 ),
 		},
 		newEntry: {
-			marginBottom: theme.spacing( 2 ),
 			display: 'flex',
-			alignItems: 'center',
-			flexDirection: 'column',
+			marginBottom: theme.spacing( 2 ),
+			marginLeft: 'auto',
+			marginRight: 'auto',
 		},
 	} )
 );
@@ -65,19 +72,23 @@ function App( props: object ) {
 				<Box className={ classes.main } component="main">
 					<EntryHeader currentDate={ dayjs() } />
 					<Box component="article" my={ 2 }>
-						Your editable journal entry here.
+						<InputBase
+							className={ classes.newButton }
+							placeholder="What happened to you today?"
+							multiline
+						/>
 					</Box>
 				</Box>
 				<Box className={ classes.sidebar } component="aside">
-					<Box className={ classes.newEntry }>
-						<Button
-							color="primary"
-							variant="contained"
-							endIcon={ <AddCircleIcon /> }
-						>
-							Today
-						</Button>
-					</Box>
+					<Fab
+						color="primary"
+						aria-label="add"
+						className={ classes.newEntry }
+						variant="extended"
+					>
+						Today
+						<AddIcon className={ classes.newButtonIcon } />
+					</Fab>
 					<SidebarDates startDate={ dayjs() } />
 				</Box>
 			</Container>
