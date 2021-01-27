@@ -1,41 +1,45 @@
-import micri, { Router } from 'micri';
-import staticHandler from 'serve-handler';
+import fastify from 'fastify';
 import { resolve } from 'path';
 import { version } from '../package.json';
-import type { IncomingMessage, ServerResponse } from 'http';
 
-const { router, on, otherwise } = Router;
+const server = fastify( { logger: true } );
 
-function isPath( req: IncomingMessage, path: string ): boolean {
-	const url = req.url ?? '/';
-	return url === path;
+server.register( import( 'fastify-static' ), {
+	root: resolve( __dirname, '..', 'build' ),
+	wildcard: false,
+} );
+
+server.register( import( 'fastify-helmet' ), {
+	contentSecurityPolicy: false,
+} );
+server.register( import( 'fastify-cors' ), {
+	origin: process.env.HOSTNAME ?? true,
+	methods: [ 'GET', 'POST' ],
+} );
+
+server.get( '/api', async () => ( {
+	message: 'Things 💯 here!',
+	version,
+} ) );
+
+server.get( '/api/entries', async () => [] );
+
+server.post( '/api/save', async () => ( { success: true } ) );
+
+server.get( '*', async ( req, reply ) => {
+	return reply.sendFile( 'index.html' );
+} );
+
+async function start() {
+	const port: number = Number.parseInt( process.env.SERVER_PORT ?? '3002' );
+	try {
+		// eslint-disable-next-line no-console
+		console.log( `Starting API server on port ${ port }!` );
+		await server.listen( port );
+	} catch ( err ) {
+		server.log.error( err );
+		process.exit( 1 );
+	}
 }
 
-const server = micri(
-	router(
-		on.get(
-			( req: IncomingMessage ) => isPath( req, '/api/entries' ),
-			() => []
-		),
-		on.post(
-			( req: IncomingMessage ) => isPath( req, '/api/save' ),
-			() => ( { success: true } )
-		),
-		otherwise( ( req: IncomingMessage, res: ServerResponse ) =>
-			process.env.ENVIRONMENT === 'production'
-				? staticHandler( req, res, {
-						public: resolve( __dirname, '..', 'build' ),
-				  } )
-				: {
-						message:
-							'Run `yarn client:start` to start the front-end!',
-						version,
-				  }
-		)
-	)
-);
-
-const port: number = Number.parseInt( process.env.SERVER_PORT ?? '3002', 10 );
-// eslint-disable-next-line no-console
-console.log( `Starting API server on port ${ port }!` );
-server.listen( port );
+start();
