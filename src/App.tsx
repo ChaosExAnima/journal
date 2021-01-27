@@ -9,13 +9,13 @@ import {
 	createMuiTheme,
 	useMediaQuery,
 	CssBaseline,
-	InputBase,
 	Fab,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import SidebarDates from 'components/sidebar-dates';
 import EntryHeader from 'components/entry-header';
 import { deepOrange, pink } from '@material-ui/core/colors';
+import EntryEditor from 'components/entry-editor';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -71,11 +71,10 @@ function App( props: object ) {
 			<Container className={ classes.root }>
 				<Box className={ classes.main } component="main">
 					<EntryHeader currentDate={ dayjs() } />
-					<Box component="article" my={ 2 }>
-						<InputBase
+					<Box my={ 2 } maxWidth="50%">
+						<EntryEditor
 							className={ classes.newButton }
 							placeholder="What happened to you today?"
-							multiline
 						/>
 					</Box>
 				</Box>
