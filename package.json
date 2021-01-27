@@ -16,7 +16,7 @@
 		"@types/react-dom": "^16.9.8",
 		"dayjs": "^1.10.4",
 		"draft-js": "^0.11.7",
-		"draftjs-to-markdown": "^0.6.0",
+		"draftjs-md-converter": "^1.4.2",
 		"fastify": "^3.11.0",
 		"fastify-cors": "^5.2.0",
 		"fastify-helmet": "^5.1.0",
