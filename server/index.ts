@@ -4,11 +4,11 @@ import { version } from '../package.json';
 
 const server = fastify( { logger: true } );
 
+// Plugins.
 server.register( import( 'fastify-static' ), {
 	root: resolve( __dirname, '..', 'build' ),
 	wildcard: false,
 } );
-
 server.register( import( 'fastify-helmet' ), {
 	contentSecurityPolicy: false,
 } );
@@ -22,10 +22,13 @@ server.get( '/api', async () => ( {
 	version,
 } ) );
 
+// Serves journal entries.
 server.get( '/api/entries', async () => [] );
 
+// Saves a journal entry.
 server.post( '/api/save', async () => ( { success: true } ) );
 
+// Serves the built file for all other paths.
 server.get( '*', async ( req, reply ) => {
 	return reply.sendFile( 'index.html' );
 } );
