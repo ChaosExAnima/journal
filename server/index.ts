@@ -60,7 +60,14 @@ server.get< GetEntry >( '/api/entry', async ( req, reply ) => {
 			resolve( entriesDir, `${ date }.md` ),
 			'utf-8'
 		);
-		const entry = mdToDraftjs( rawEntry );
+		const parsedEntry = mdToDraftjs( rawEntry );
+
+		// Strip off header
+		const entry = {
+			...parsedEntry,
+			blocks: parsedEntry.blocks.slice( 2 ),
+		};
+
 		return reply.send( entry );
 	} catch ( err ) {
 		server.log.error( err );

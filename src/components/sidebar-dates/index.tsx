@@ -13,7 +13,7 @@ import {
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 
 type SidebarDatesProps = {
-	startDate: dayjs.Dayjs;
+	dates?: dayjs.Dayjs[];
 };
 
 const useStyles = makeStyles( ( theme ) =>
@@ -28,8 +28,16 @@ const useStyles = makeStyles( ( theme ) =>
 	} )
 );
 
-export default function SidebarDates( { startDate }: SidebarDatesProps ) {
+export default function SidebarDates( { dates }: SidebarDatesProps ) {
 	const classes = useStyles();
+
+	if ( ! dates ) {
+		return null;
+	}
+	if ( dates.length === 0 ) {
+		return null;
+	}
+
 	return (
 		<nav>
 			<List
@@ -39,7 +47,7 @@ export default function SidebarDates( { startDate }: SidebarDatesProps ) {
 						className={ classes.subheader }
 					>
 						<ListItemText
-							primary={ startDate.format( 'MMMM YYYY' ) }
+							primary={ dates[ 0 ].format( 'MMMM YYYY' ) }
 						/>
 						<IconButton color="primary">
 							<CalendarTodayIcon />
@@ -47,14 +55,9 @@ export default function SidebarDates( { startDate }: SidebarDatesProps ) {
 					</ListSubheader>
 				}
 			>
-				{ Array.from( Array( 10 ).keys() ).map( ( daysFromToday ) => (
-					<ListItem button key={ daysFromToday }>
-						<ListItemText
-							primary={ startDate
-								.clone()
-								.subtract( daysFromToday - 1, 'day' )
-								.format( 'MM/DD/YYYY' ) }
-						/>
+				{ dates.map( ( date ) => (
+					<ListItem button key={ date.toString() }>
+						<ListItemText primary={ date.format( 'MM/DD/YYYY' ) } />
 					</ListItem>
 				) ) }
 			</List>

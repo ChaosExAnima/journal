@@ -10,12 +10,15 @@ import {
 	useMediaQuery,
 	CssBaseline,
 	Fab,
+	CircularProgress,
 } from '@material-ui/core';
+import { deepOrange, pink } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
+
 import SidebarDates from 'components/sidebar-dates';
 import EntryHeader from 'components/entry-header';
-import { deepOrange, pink } from '@material-ui/core/colors';
 import EntryEditor from 'components/entry-editor';
+import { useApiEntries, useApiEntry } from 'components/data';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -34,17 +37,14 @@ const useStyles = makeStyles( ( theme ) =>
 			marginRight: theme.spacing( 2 ),
 			overflowY: 'auto',
 		},
-		newButton: {
-			width: '100%',
-		},
-		newButtonIcon: {
-			marginLeft: theme.spacing( 1 ),
-		},
-		newEntry: {
+		newEntryButton: {
 			display: 'flex',
 			marginBottom: theme.spacing( 2 ),
 			marginLeft: 'auto',
 			marginRight: 'auto',
+		},
+		newEntryButtonIcon: {
+			marginLeft: theme.spacing( 1 ),
 		},
 	} )
 );
@@ -65,30 +65,38 @@ function App( props: object ) {
 		[ prefersDarkMode ]
 	);
 
+	const today = dayjs();
+	const { loading: entryLoading, data: entry } = useApiEntry( today );
+	const entries = useApiEntries();
+
 	return (
 		<ThemeProvider theme={ theme }>
 			<CssBaseline />
 			<Container className={ classes.root }>
 				<Box className={ classes.main } component="main">
-					<EntryHeader currentDate={ dayjs() } />
+					<EntryHeader currentDate={ today } />
 					<Box my={ 2 } maxWidth="50%">
-						<EntryEditor
-							className={ classes.newButton }
-							placeholder="What happened to you today?"
-						/>
+						{ entryLoading && <CircularProgress /> }
+						{ ! entryLoading && (
+							<EntryEditor
+								placeholder="What happened to you today?"
+								entry={ entry }
+							/>
+						) }
 					</Box>
 				</Box>
 				<Box className={ classes.sidebar } component="aside">
 					<Fab
 						color="primary"
 						aria-label="add"
-						className={ classes.newEntry }
+						className={ classes.newEntryButton }
 						variant="extended"
 					>
 						Today
-						<AddIcon className={ classes.newButtonIcon } />
+						<AddIcon className={ classes.newEntryButtonIcon } />
 					</Fab>
-					<SidebarDates startDate={ dayjs() } />
+					{ ! entries && <CircularProgress /> }
+					{ entries && <SidebarDates dates={ entries } /> }
 				</Box>
 			</Container>
 		</ThemeProvider>

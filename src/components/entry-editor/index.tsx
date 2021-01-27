@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Editor from '@draft-js-plugins/editor';
 import createLinkifyPlugin from '@draft-js-plugins/linkify';
 import {
+	ContentState,
 	DraftEditorCommand,
 	DraftHandleValue,
 	EditorState,
@@ -14,6 +15,7 @@ import 'draft-js/dist/Draft.css';
 type EntryEditorProps = {
 	className?: string;
 	placeholder?: string;
+	entry?: ContentState;
 };
 
 const useStyles = makeStyles( ( theme ) =>
@@ -34,9 +36,12 @@ const useStyles = makeStyles( ( theme ) =>
 export default function EntryEditor( {
 	className: addClassName,
 	placeholder,
+	entry,
 }: EntryEditorProps ) {
 	const [ editorState, setEditorState ] = useState(
-		EditorState.createEmpty()
+		entry
+			? EditorState.createWithContent( entry )
+			: EditorState.createEmpty()
 	);
 	const classes = useStyles();
 
