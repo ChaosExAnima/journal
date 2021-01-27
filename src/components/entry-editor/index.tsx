@@ -9,6 +9,8 @@ import {
 } from 'draft-js';
 import { createStyles, Link, makeStyles, Typography } from '@material-ui/core';
 
+import 'draft-js/dist/Draft.css';
+
 type EntryEditorProps = {
 	className?: string;
 	placeholder?: string;
