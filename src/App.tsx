@@ -18,7 +18,7 @@ import AddIcon from '@material-ui/icons/Add';
 import SidebarDates from 'components/sidebar-dates';
 import EntryHeader from 'components/entry-header';
 import EntryEditor from 'components/entry-editor';
-import { useApiEntries, useApiEntry } from 'components/data';
+import { useApiEntries } from 'components/data';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -66,7 +66,6 @@ function App( props: object ) {
 	);
 
 	const today = dayjs();
-	const { loading: entryLoading, data: entry } = useApiEntry( today );
 	const entries = useApiEntries();
 
 	return (
@@ -76,13 +75,10 @@ function App( props: object ) {
 				<Box className={ classes.main } component="main">
 					<EntryHeader currentDate={ today } />
 					<Box my={ 2 } maxWidth="50%">
-						{ entryLoading && <CircularProgress /> }
-						{ ! entryLoading && (
-							<EntryEditor
-								placeholder="What happened to you today?"
-								entry={ entry }
-							/>
-						) }
+						<EntryEditor
+							placeholder="What happened to you today?"
+							date={ today }
+						/>
 					</Box>
 				</Box>
 				<Box className={ classes.sidebar } component="aside">
