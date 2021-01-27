@@ -1,0 +1,7 @@
+{
+	"compilerOptions": {
+		"resolveJsonModule": true
+	},
+	"extends": "@tsconfig/node12/tsconfig.json",
+	"files": [ "index.ts" ]
+}
