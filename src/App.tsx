@@ -10,7 +10,6 @@ import {
 	useMediaQuery,
 	CssBaseline,
 	Fab,
-	CircularProgress,
 } from '@material-ui/core';
 import { deepOrange, pink } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
@@ -18,7 +17,6 @@ import AddIcon from '@material-ui/icons/Add';
 import SidebarDates from 'components/sidebar-dates';
 import EntryHeader from 'components/entry-header';
 import EntryEditor from 'components/entry-editor';
-import { useApiEntries } from 'components/data';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -65,8 +63,11 @@ function App( props: object ) {
 		[ prefersDarkMode ]
 	);
 
-	const today = dayjs();
-	const entries = useApiEntries();
+	let today = dayjs();
+
+	const onEntryChoose = ( date: dayjs.Dayjs ) => {
+		today = date;
+	};
 
 	return (
 		<ThemeProvider theme={ theme }>
@@ -91,8 +92,7 @@ function App( props: object ) {
 						Today
 						<AddIcon className={ classes.newEntryButtonIcon } />
 					</Fab>
-					{ ! entries && <CircularProgress /> }
-					{ entries && <SidebarDates dates={ entries } /> }
+					<SidebarDates onEntryClick={ onEntryChoose } />
 				</Box>
 			</Container>
 		</ThemeProvider>

@@ -1,6 +1,6 @@
 import React from 'react';
-import dayjs from 'dayjs';
 import {
+	CircularProgress,
 	createStyles,
 	IconButton,
 	List,
@@ -12,8 +12,11 @@ import {
 } from '@material-ui/core';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 
+import { useApiEntries } from 'components/data';
+import dayjs from 'dayjs';
+
 type SidebarDatesProps = {
-	dates?: dayjs.Dayjs[];
+	onEntryClick: ( date: dayjs.Dayjs ) => void;
 };
 
 const useStyles = makeStyles( ( theme ) =>
@@ -28,14 +31,15 @@ const useStyles = makeStyles( ( theme ) =>
 	} )
 );
 
-export default function SidebarDates( { dates }: SidebarDatesProps ) {
+export default function SidebarDates( { onEntryClick }: SidebarDatesProps ) {
+	const dates = useApiEntries();
 	const classes = useStyles();
 
 	if ( ! dates ) {
-		return null;
+		return <CircularProgress />;
 	}
 	if ( dates.length === 0 ) {
-		return null;
+		return <p>No entries found!</p>;
 	}
 
 	return (
@@ -57,7 +61,10 @@ export default function SidebarDates( { dates }: SidebarDatesProps ) {
 			>
 				{ dates.map( ( date ) => (
 					<ListItem button key={ date.toString() }>
-						<ListItemText primary={ date.format( 'MM/DD/YYYY' ) } />
+						<ListItemText
+							primary={ date.format( 'MM/DD/YYYY' ) }
+							onClick={ () => onEntryClick( date ) }
+						/>
 					</ListItem>
 				) ) }
 			</List>
