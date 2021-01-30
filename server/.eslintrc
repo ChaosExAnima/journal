@@ -1,0 +1,11 @@
+{
+	"extends": [
+		"react-app",
+		"react-app/jest",
+		"plugin:import/typescript",
+		"plugin:@wordpress/eslint-plugin/recommended"
+	],
+	"rules": {
+		"no-console": "off"
+	}
+}
