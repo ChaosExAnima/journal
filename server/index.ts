@@ -62,13 +62,7 @@ server.get< GetEntry >( '/api/entry', async ( req, reply ) => {
 		);
 		const parsedEntry = mdToDraftjs( rawEntry );
 
-		// Strip off header
-		const entry = {
-			...parsedEntry,
-			blocks: parsedEntry.blocks.slice( 2 ),
-		};
-
-		return reply.send( entry );
+		return reply.send( parsedEntry );
 	} catch ( err ) {
 		server.log.error( err );
 		return reply.code( 404 ).send( new Error( 'Entry not found' ) );
