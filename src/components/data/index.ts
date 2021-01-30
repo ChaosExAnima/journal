@@ -4,9 +4,16 @@ import { useEffect, useState } from 'react';
 
 const APIDateFormat = 'YYYY-MM-DD';
 
+type APIQueryError = {
+	error: string;
+	message?: string;
+	statusCode: number;
+};
+
 type APIQueryResponse< R > = {
 	loading: boolean;
 	data?: R;
+	error?: APIQueryError;
 };
 
 export function useApiQuery< R >( path: string ): APIQueryResponse< R > {
@@ -35,12 +42,18 @@ export function useApiQuery< R >( path: string ): APIQueryResponse< R > {
 	return { loading, data };
 }
 
-export function useApiEntries(): dayjs.Dayjs[] | undefined {
-	const { data } = useApiQuery< string[] >( 'entries' );
-	if ( ! data ) {
-		return undefined;
+export function useApiEntries(): APIQueryResponse< dayjs.Dayjs[] > {
+	const { data, loading } = useApiQuery< string[] >( 'entries' );
+	if ( ! Array.isArray( data ) ) {
+		return {
+			loading,
+			error: data,
+		};
 	}
-	return data.map( dayjs );
+	return {
+		loading,
+		data: data.map( dayjs ),
+	};
 }
 
 export function useApiEntry(
@@ -49,8 +62,8 @@ export function useApiEntry(
 	const { loading, data: rawEntry } = useApiQuery< RawDraftContentState >(
 		`entry?date=${ date.format( APIDateFormat ) }`
 	);
-	if ( ! rawEntry ) {
-		return { loading };
+	if ( ! rawEntry || 'error' in rawEntry ) {
+		return { loading, error: rawEntry };
 	}
 	return { data: convertFromRaw( rawEntry ), loading };
 }
