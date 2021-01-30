@@ -10,7 +10,7 @@ import {
 import { createStyles, Link, makeStyles, Typography } from '@material-ui/core';
 import 'draft-js/dist/Draft.css';
 
-import { useCurrentEntry, LoadingState } from 'components/data';
+import { useCurrentEntry, LoadingState, useCurrentDate } from 'components/data';
 import Loading from 'components/loading';
 
 type EntryEditorProps = {
@@ -38,6 +38,7 @@ export default function EntryEditor( {
 	placeholder,
 }: EntryEditorProps ) {
 	const classes = useStyles();
+	const date = useCurrentDate();
 	const entry = useCurrentEntry();
 	const [ editorState, setEditorState ] = useState(
 		EditorState.createEmpty()
@@ -47,7 +48,7 @@ export default function EntryEditor( {
 			return;
 		}
 		setEditorState( EditorState.createWithContent( entry ) );
-	}, [ entry ] );
+	}, [ entry, date ] );
 
 	if ( entry === LoadingState ) {
 		return <Loading margin={ 4 } />;

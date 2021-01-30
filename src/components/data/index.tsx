@@ -45,7 +45,10 @@ export default class DataLayer extends Component<
 		const date = dayjs( rawDate );
 		const dateKey = date.format( APIDateFormat );
 		if ( ! this.state.entries.has( dateKey ) ) {
-			return;
+			return this.setState( {
+				...this.state,
+				currentDate: date,
+			} );
 		}
 		this.setState( ( curStore ) => ( {
 			...curStore,
@@ -126,10 +129,12 @@ export function useStore(): DataStoreContext {
 	return store;
 }
 
+export function useCurrentDate(): Dayjs {
+	const { currentDate } = useStore();
+	return currentDate;
+}
+
 export function useCurrentEntry(): DataStoreEntry {
-	const store = useContext( DataContext );
-	if ( ! store ) {
-		return null;
-	}
+	const store = useStore();
 	return store.entries.get( store.currentDate.format( APIDateFormat ) );
 }
