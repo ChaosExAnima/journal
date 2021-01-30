@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-	CircularProgress,
 	createStyles,
 	List,
 	ListItemText,
@@ -11,9 +10,15 @@ import dayjs from 'dayjs';
 
 import { useStore } from 'components/data';
 import SidebarEntry from './entry';
+import Loading from 'components/loading';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
+		root: {
+			position: 'relative',
+			overflow: 'auto',
+			maxHeight: '100vh',
+		},
 		list: {
 			padding: 0,
 		},
@@ -27,9 +32,6 @@ const useStyles = makeStyles( ( theme ) =>
 			borderRadius: 0,
 			paddingRight: theme.spacing( 2 ) - 12,
 		},
-		loading: {
-			marginTop: theme.spacing( 2 ),
-		},
 	} )
 );
 
@@ -38,11 +40,7 @@ export default function SidebarDates() {
 	const classes = useStyles();
 
 	if ( loading ) {
-		return (
-			<div className={ classes.loading }>
-				<CircularProgress className={ classes.loading } />
-			</div>
-		);
+		return <Loading />;
 	}
 	if ( entries.size === 0 ) {
 		return <p>No entries found!</p>;

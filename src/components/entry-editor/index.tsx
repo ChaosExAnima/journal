@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Editor from '@draft-js-plugins/editor';
 import createLinkifyPlugin from '@draft-js-plugins/linkify';
 import {
@@ -7,15 +7,11 @@ import {
 	EditorState,
 	RichUtils,
 } from 'draft-js';
-import {
-	CircularProgress,
-	createStyles,
-	Link,
-	makeStyles,
-	Typography,
-} from '@material-ui/core';
+import { createStyles, Link, makeStyles, Typography } from '@material-ui/core';
 import 'draft-js/dist/Draft.css';
+
 import { useCurrentEntry } from 'components/data';
+import Loading from 'components/loading';
 
 type EntryEditorProps = {
 	className?: string;
@@ -54,7 +50,7 @@ export default function EntryEditor( {
 	}, [ entry ] );
 
 	if ( ! entry ) {
-		return <CircularProgress />;
+		return <Loading margin={ 4 } />;
 	}
 
 	const handleKeyCommand = (

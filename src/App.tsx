@@ -36,6 +36,7 @@ const useStyles = makeStyles( ( theme ) =>
 			width: theme.breakpoints.values.sm / 3,
 			marginRight: theme.spacing( 2 ),
 			overflowY: 'auto',
+			flexShrink: 0,
 		},
 		newEntryButton: {
 			display: 'flex',
