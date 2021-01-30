@@ -1,6 +1,7 @@
 import type { Dayjs } from 'dayjs';
 import type { ContentState } from 'draft-js';
 import type { Map } from 'immutable';
+import type { LoadingState } from '.';
 
 export type APIQueryError = {
 	error: string;
@@ -8,7 +9,12 @@ export type APIQueryError = {
 	statusCode: number;
 };
 
-export type DataStoreEntry = ContentState | APIQueryError | undefined | null;
+export type DataStoreEntry =
+	| ContentState
+	| APIQueryError
+	| typeof LoadingState
+	| undefined
+	| null;
 export type DataStoreEntries = Map< string, DataStoreEntry >;
 
 export type DataStore = {

@@ -10,7 +10,7 @@ import {
 import { createStyles, Link, makeStyles, Typography } from '@material-ui/core';
 import 'draft-js/dist/Draft.css';
 
-import { useCurrentEntry } from 'components/data';
+import { useCurrentEntry, LoadingState } from 'components/data';
 import Loading from 'components/loading';
 
 type EntryEditorProps = {
@@ -43,13 +43,13 @@ export default function EntryEditor( {
 		EditorState.createEmpty()
 	);
 	useEffect( () => {
-		if ( ! entry || 'error' in entry ) {
+		if ( ! entry || entry === LoadingState || 'error' in entry ) {
 			return;
 		}
 		setEditorState( EditorState.createWithContent( entry ) );
 	}, [ entry ] );
 
-	if ( ! entry ) {
+	if ( entry === LoadingState ) {
 		return <Loading margin={ 4 } />;
 	}
 

@@ -7,6 +7,7 @@ import type { DataStore, DataStoreContext, DataStoreEntry } from './types';
 import { fetchData } from './utils';
 
 const APIDateFormat = 'YYYY-MM-DD';
+export const LoadingState = Symbol( 'loading state' );
 
 export const DataContext = createContext< DataStoreContext | null >( null );
 
@@ -32,13 +33,19 @@ export default class DataLayer extends Component<
 
 	componentDidMount() {
 		this.loadEntries();
+		this.loadEntry( this.state.currentDate );
 	}
 
 	async loadEntry( rawDate: Dayjs | Date ) {
 		const date = dayjs( rawDate );
+		const dateKey = date.format( APIDateFormat );
+		if ( ! this.state.entries.has( dateKey ) ) {
+			return;
+		}
 		this.setState( ( curStore ) => ( {
 			...curStore,
 			currentDate: date,
+			entries: this.state.entries.set( dateKey, LoadingState ),
 		} ) );
 		if ( this.loadedEntries.has( date ) ) {
 			return;
