@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import {
 	makeStyles,
@@ -64,14 +64,22 @@ function App( props: object ) {
 		[ prefersDarkMode ]
 	);
 
-	let today = dayjs();
-	let errorFound = false;
+	const [ appState, setAppState ] = useState( {
+		currentDate: dayjs(),
+		errorFound: false,
+	} );
 
 	const onEntryChoose = ( date: dayjs.Dayjs ) => {
-		today = date;
+		setAppState( {
+			...appState,
+			currentDate: date,
+		} );
 	};
 	const onError = () => {
-		errorFound = true;
+		setAppState( {
+			...appState,
+			errorFound: true,
+		} );
 	};
 
 	return (
@@ -79,13 +87,13 @@ function App( props: object ) {
 			<CssBaseline />
 			<Container className={ classes.root }>
 				<Box className={ classes.main } component="main">
-					<EntryHeader currentDate={ today } />
+					<EntryHeader currentDate={ appState.currentDate } />
 					<Box my={ 2 } maxWidth="50%">
 						<EntryError onError={ onError }>
 							<EntryEditor
 								placeholder="What happened to you today?"
-								date={ today }
-								skipLoad={ errorFound }
+								date={ appState.currentDate }
+								skipLoad={ appState.errorFound }
 							/>
 						</EntryError>
 					</Box>

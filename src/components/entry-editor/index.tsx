@@ -58,7 +58,7 @@ export default function EntryEditor( {
 			setEditorState( EditorState.createWithContent( entry ) );
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ entryExists, loading ] );
+	}, [ entryExists, loading, date ] );
 
 	if ( loading ) {
 		return <CircularProgress />;
