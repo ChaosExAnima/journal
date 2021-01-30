@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-	IconButton,
-	ListItemText,
-	ListSubheader,
-	Paper,
-} from '@material-ui/core';
+import { IconButton, ListItemText, ListSubheader } from '@material-ui/core';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 
 import { useStore } from 'components/data';
@@ -23,7 +18,7 @@ export default function SidebarEntryHeader( {
 		return null;
 	}
 	return (
-		<ListSubheader component={ Paper } className={ className }>
+		<ListSubheader className={ className }>
 			<ListItemText primary={ monthString } />
 			<IconButton
 				color="primary"
