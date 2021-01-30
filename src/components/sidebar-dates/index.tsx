@@ -28,15 +28,23 @@ const useStyles = makeStyles( ( theme ) =>
 			borderRadius: 0,
 			paddingRight: theme.spacing( 2 ) - 12,
 		},
+		loading: {
+			textAlign: 'center',
+			marginTop: theme.spacing( 2 ),
+		},
 	} )
 );
 
 export default function SidebarDates( { onEntryClick }: SidebarDatesProps ) {
-	const dates = useApiEntries();
+	const { data: dates, loading } = useApiEntries();
 	const classes = useStyles();
 
-	if ( ! dates ) {
-		return <CircularProgress />;
+	if ( ! loading || ! Array.isArray( dates ) ) {
+		return (
+			<div className={ classes.loading }>
+				<CircularProgress className={ classes.loading } />
+			</div>
+		);
 	}
 	if ( dates.length === 0 ) {
 		return <p>No entries found!</p>;
