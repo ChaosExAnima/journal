@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
 import Editor from '@draft-js-plugins/editor';
 import createLinkifyPlugin from '@draft-js-plugins/linkify';
 import {
@@ -14,15 +15,15 @@ import {
 	makeStyles,
 	Typography,
 } from '@material-ui/core';
-
 import 'draft-js/dist/Draft.css';
-import dayjs from 'dayjs';
+
 import { useApiEntry } from 'components/data';
 
 type EntryEditorProps = {
+	date: dayjs.Dayjs;
 	className?: string;
 	placeholder?: string;
-	date: dayjs.Dayjs;
+	skipLoad?: boolean;
 };
 
 const useStyles = makeStyles( ( theme ) =>
@@ -44,6 +45,7 @@ export default function EntryEditor( {
 	className: addClassName,
 	placeholder,
 	date,
+	skipLoad = false,
 }: EntryEditorProps ) {
 	const classes = useStyles();
 	const { loading, data: entry } = useApiEntry( date );
@@ -52,7 +54,7 @@ export default function EntryEditor( {
 	);
 	const entryExists = !! entry;
 	useEffect( () => {
-		if ( entry ) {
+		if ( ! skipLoad && entry ) {
 			setEditorState( EditorState.createWithContent( entry ) );
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -17,6 +17,7 @@ import AddIcon from '@material-ui/icons/Add';
 import SidebarDates from 'components/sidebar-dates';
 import EntryHeader from 'components/entry-header';
 import EntryEditor from 'components/entry-editor';
+import EntryError from 'components/entry-editor/error';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -64,9 +65,13 @@ function App( props: object ) {
 	);
 
 	let today = dayjs();
+	let errorFound = false;
 
 	const onEntryChoose = ( date: dayjs.Dayjs ) => {
 		today = date;
+	};
+	const onError = () => {
+		errorFound = true;
 	};
 
 	return (
@@ -76,10 +81,13 @@ function App( props: object ) {
 				<Box className={ classes.main } component="main">
 					<EntryHeader currentDate={ today } />
 					<Box my={ 2 } maxWidth="50%">
-						<EntryEditor
-							placeholder="What happened to you today?"
-							date={ today }
-						/>
+						<EntryError onError={ onError }>
+							<EntryEditor
+								placeholder="What happened to you today?"
+								date={ today }
+								skipLoad={ errorFound }
+							/>
+						</EntryError>
 					</Box>
 				</Box>
 				<Box className={ classes.sidebar } component="aside">
