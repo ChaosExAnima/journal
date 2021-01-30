@@ -9,7 +9,7 @@ export type APIQueryError = {
 };
 
 export type DataStoreEntry = ContentState | APIQueryError | undefined | null;
-export type DataStoreEntries = Map< Dayjs, DataStoreEntry >;
+export type DataStoreEntries = Map< string, DataStoreEntry >;
 
 export type DataStore = {
 	hasError: boolean;

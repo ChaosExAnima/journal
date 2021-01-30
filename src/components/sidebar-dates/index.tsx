@@ -7,6 +7,7 @@ import {
 	ListSubheader,
 	makeStyles,
 } from '@material-ui/core';
+import dayjs from 'dayjs';
 
 import { useStore } from 'components/data';
 import SidebarEntry from './entry';
@@ -27,7 +28,6 @@ const useStyles = makeStyles( ( theme ) =>
 			paddingRight: theme.spacing( 2 ) - 12,
 		},
 		loading: {
-			textAlign: 'center',
 			marginTop: theme.spacing( 2 ),
 		},
 	} )
@@ -55,34 +55,40 @@ export default function SidebarDates() {
 		.sort()
 		.reverse()
 		.groupBy( ( value ) => {
-			return value?.set( 'date', 1 );
+			return !! value && dayjs( value ).set( 'date', 1 );
 		} )
-		.map( ( monthEntries, month ) => (
-			<li key={ month?.unix() || 'unknown' } className={ classes.months }>
-				{ month && (
-					<ListSubheader className={ classes.subheader }>
-						<ListItemText
-							primary={ month.format( headerDateFormat ) }
-						/>
-					</ListSubheader>
-				) }
-				{ monthEntries
-					?.map( ( entry ) => (
-						<SidebarEntry
-							key={ entry?.unix() || 'unknown' }
-							date={ entry }
-						/>
-					) )
-					.valueSeq()
-					.toArray() }
-			</li>
-		) )
+		.map(
+			( monthEntries, month ) =>
+				month && (
+					<li
+						key={ dayjs( month ).unix() || 'unknown' }
+						className={ classes.months }
+					>
+						{ month && (
+							<ListSubheader className={ classes.subheader }>
+								<ListItemText
+									primary={ month.format( headerDateFormat ) }
+								/>
+							</ListSubheader>
+						) }
+						{ monthEntries
+							?.map( ( entry ) => {
+								if ( ! entry ) return null;
+								const entryDate = dayjs( entry );
+								return (
+									<SidebarEntry
+										key={ entryDate.unix() }
+										date={ entryDate }
+									/>
+								);
+							} )
+							.valueSeq()
+							.toArray() }
+					</li>
+				)
+		)
 		.valueSeq()
 		.toArray();
 
-	return (
-		<List component="nav">
-			<ul className={ classes.list }>{ sortedMonths }</ul>
-		</List>
-	);
+	return <List subheader={ <li /> }>{ sortedMonths }</List>;
 }

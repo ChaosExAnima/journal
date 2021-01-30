@@ -55,6 +55,9 @@
 				}
 			}
 		},
+		"rules": {
+			"no-console": "warn"
+		},
 		"ignorePatterns": [
 			"**/*.js",
 			"**/*.d.ts"

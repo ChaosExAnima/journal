@@ -1,7 +1,7 @@
 import { Component, createContext, ReactNode, useContext } from 'react';
 import { ContentState, convertFromRaw, RawDraftContentState } from 'draft-js';
 import dayjs, { Dayjs } from 'dayjs';
-import { OrderedMap } from 'immutable';
+import { Map } from 'immutable';
 
 import type { DataStore, DataStoreContext, DataStoreEntry } from './types';
 import { fetchData } from './utils';
@@ -18,7 +18,7 @@ export default class DataLayer extends Component<
 		hasError: false,
 		loading: false,
 		currentDate: dayjs(),
-		entries: OrderedMap(),
+		entries: Map(),
 	};
 
 	loadedEntries = new Set< Dayjs >();
@@ -50,7 +50,7 @@ export default class DataLayer extends Component<
 		this.setState( ( curStore ) => ( {
 			...curStore,
 			entries: this.state.entries.set(
-				date,
+				date.format( APIDateFormat ),
 				'error' in rawEntry ? rawEntry : convertFromRaw( rawEntry )
 			),
 		} ) );
@@ -69,11 +69,14 @@ export default class DataLayer extends Component<
 				hasError: true,
 			} ) );
 		}
+		const parsedEntryDates = entryDates
+			.sort()
+			.reverse()
+			.map( ( date ) => [ date, null ] );
+
 		this.setState( ( curStore ) => ( {
 			...curStore,
-			entries: OrderedMap(
-				entryDates.map( ( date ) => [ dayjs( date ), null ] )
-			),
+			entries: Map( parsedEntryDates ),
 			loading: false,
 		} ) );
 	}
@@ -81,7 +84,10 @@ export default class DataLayer extends Component<
 	updateEntry( date: dayjs.Dayjs, entry: DataStoreEntry ) {
 		this.setState( {
 			...this.state,
-			entries: this.state.entries.set( date, entry ),
+			entries: this.state.entries.set(
+				date.format( APIDateFormat ),
+				entry
+			),
 		} );
 	}
 
@@ -116,5 +122,5 @@ export function useCurrentEntry(): DataStoreEntry {
 	if ( ! store ) {
 		return null;
 	}
-	return store.entries.get( store.currentDate );
+	return store.entries.get( store.currentDate.format( APIDateFormat ) );
 }
