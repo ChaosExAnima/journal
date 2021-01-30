@@ -5,13 +5,10 @@ import {
 	makeStyles,
 	Typography,
 } from '@material-ui/core';
-import dayjs from 'dayjs';
 import React from 'react';
 import CheckIcon from '@material-ui/icons/Check';
 
-type EntryHeaderProps = {
-	currentDate: dayjs.Dayjs;
-};
+import { useStore } from 'components/data';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -21,7 +18,8 @@ const useStyles = makeStyles( ( theme ) =>
 	} )
 );
 
-export default function EntryHeader( { currentDate }: EntryHeaderProps ) {
+export default function EntryHeader() {
+	const { currentDate } = useStore();
 	const classes = useStyles();
 	return (
 		<Box component="header" display="flex" alignItems="center">

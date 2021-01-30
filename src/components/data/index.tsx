@@ -1,7 +1,7 @@
 import { Component, createContext, ReactNode, useContext } from 'react';
 import { ContentState, convertFromRaw, RawDraftContentState } from 'draft-js';
 import dayjs, { Dayjs } from 'dayjs';
-import { Map } from 'immutable';
+import { OrderedMap as Map } from 'immutable';
 
 import type { DataStore, DataStoreContext, DataStoreEntry } from './types';
 import { fetchData } from './utils';
@@ -9,18 +9,23 @@ import { fetchData } from './utils';
 const APIDateFormat = 'YYYY-MM-DD';
 export const LoadingState = Symbol( 'loading state' );
 
-export const DataContext = createContext< DataStoreContext | null >( null );
+const defaultStore = (): DataStore => ( {
+	hasError: false,
+	loading: false,
+	currentDate: dayjs(),
+	entries: Map(),
+} );
+
+export const DataContext = createContext< DataStoreContext >( {
+	...defaultStore(),
+	loadEntry: () => Promise.resolve(),
+} );
 
 export default class DataLayer extends Component<
 	{ children: ReactNode },
 	DataStore
 > {
-	state: DataStore = {
-		hasError: false,
-		loading: false,
-		currentDate: dayjs(),
-		entries: Map(),
-	};
+	state: DataStore = defaultStore();
 
 	loadedEntries = new Set< Dayjs >();
 

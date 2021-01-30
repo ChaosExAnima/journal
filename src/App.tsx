@@ -1,5 +1,4 @@
-import React, { useMemo, useState } from 'react';
-import dayjs from 'dayjs';
+import React, { useMemo } from 'react';
 import {
 	makeStyles,
 	createStyles,
@@ -9,16 +8,14 @@ import {
 	createMuiTheme,
 	useMediaQuery,
 	CssBaseline,
-	Fab,
 } from '@material-ui/core';
 import { deepOrange, pink } from '@material-ui/core/colors';
-import AddIcon from '@material-ui/icons/Add';
 
-import SidebarDates from 'components/sidebar-dates';
 import EntryHeader from 'components/entry-header';
 import EntryEditor from 'components/entry-editor';
 import EntryError from 'components/entry-editor/error';
 import DataLayer from 'components/data';
+import Sidebar from 'components/sidebar';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -37,15 +34,6 @@ const useStyles = makeStyles( ( theme ) =>
 			marginRight: theme.spacing( 2 ),
 			overflowY: 'auto',
 			flexShrink: 0,
-		},
-		newEntryButton: {
-			display: 'flex',
-			marginBottom: theme.spacing( 2 ),
-			marginLeft: 'auto',
-			marginRight: 'auto',
-		},
-		newEntryButtonIcon: {
-			marginLeft: theme.spacing( 1 ),
 		},
 	} )
 );
@@ -66,43 +54,20 @@ function App( props: object ) {
 		[ prefersDarkMode ]
 	);
 
-	const [ appState, setAppState ] = useState( {
-		currentDate: dayjs(),
-		errorFound: false,
-	} );
-
-	const onError = () => {
-		setAppState( {
-			...appState,
-			errorFound: true,
-		} );
-	};
-
 	return (
 		<ThemeProvider theme={ theme }>
 			<DataLayer>
 				<CssBaseline />
 				<Container className={ classes.root }>
 					<Box className={ classes.main } component="main">
-						<EntryHeader currentDate={ appState.currentDate } />
+						<EntryHeader />
 						<Box my={ 2 } maxWidth="50%">
-							<EntryError onError={ onError }>
+							<EntryError>
 								<EntryEditor placeholder="What happened to you today?" />
 							</EntryError>
 						</Box>
 					</Box>
-					<Box className={ classes.sidebar } component="aside">
-						<Fab
-							color="primary"
-							aria-label="add"
-							className={ classes.newEntryButton }
-							variant="extended"
-						>
-							Today
-							<AddIcon className={ classes.newEntryButtonIcon } />
-						</Fab>
-						<SidebarDates />
-					</Box>
+					<Sidebar className={ classes.sidebar } />
 				</Container>
 			</DataLayer>
 		</ThemeProvider>

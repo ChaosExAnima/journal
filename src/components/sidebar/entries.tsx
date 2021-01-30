@@ -35,7 +35,7 @@ const useStyles = makeStyles( ( theme ) =>
 	} )
 );
 
-export default function SidebarDates() {
+export default function SidebarEntries() {
 	const { loading, entries } = useStore();
 	const classes = useStyles();
 
