@@ -123,9 +123,6 @@ export default class DataLayer extends Component<
 
 export function useStore(): DataStoreContext {
 	const store = useContext( DataContext );
-	if ( ! store ) {
-		throw Error( 'Store is null' );
-	}
 	return store;
 }
 
