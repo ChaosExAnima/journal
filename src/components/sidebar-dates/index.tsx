@@ -39,7 +39,7 @@ export default function SidebarDates( { onEntryClick }: SidebarDatesProps ) {
 	const { data: dates, loading } = useApiEntries();
 	const classes = useStyles();
 
-	if ( ! loading || ! Array.isArray( dates ) ) {
+	if ( loading || ! Array.isArray( dates ) ) {
 		return (
 			<div className={ classes.loading }>
 				<CircularProgress className={ classes.loading } />
