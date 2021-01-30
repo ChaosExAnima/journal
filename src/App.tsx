@@ -18,6 +18,7 @@ import SidebarDates from 'components/sidebar-dates';
 import EntryHeader from 'components/entry-header';
 import EntryEditor from 'components/entry-editor';
 import EntryError from 'components/entry-editor/error';
+import DataLayer from 'components/data';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -69,12 +70,6 @@ function App( props: object ) {
 		errorFound: false,
 	} );
 
-	const onEntryChoose = ( date: dayjs.Dayjs ) => {
-		setAppState( {
-			...appState,
-			currentDate: date,
-		} );
-	};
 	const onError = () => {
 		setAppState( {
 			...appState,
@@ -84,33 +79,31 @@ function App( props: object ) {
 
 	return (
 		<ThemeProvider theme={ theme }>
-			<CssBaseline />
-			<Container className={ classes.root }>
-				<Box className={ classes.main } component="main">
-					<EntryHeader currentDate={ appState.currentDate } />
-					<Box my={ 2 } maxWidth="50%">
-						<EntryError onError={ onError }>
-							<EntryEditor
-								placeholder="What happened to you today?"
-								date={ appState.currentDate }
-								skipLoad={ appState.errorFound }
-							/>
-						</EntryError>
+			<DataLayer>
+				<CssBaseline />
+				<Container className={ classes.root }>
+					<Box className={ classes.main } component="main">
+						<EntryHeader currentDate={ appState.currentDate } />
+						<Box my={ 2 } maxWidth="50%">
+							<EntryError onError={ onError }>
+								<EntryEditor placeholder="What happened to you today?" />
+							</EntryError>
+						</Box>
 					</Box>
-				</Box>
-				<Box className={ classes.sidebar } component="aside">
-					<Fab
-						color="primary"
-						aria-label="add"
-						className={ classes.newEntryButton }
-						variant="extended"
-					>
-						Today
-						<AddIcon className={ classes.newEntryButtonIcon } />
-					</Fab>
-					<SidebarDates onEntryClick={ onEntryChoose } />
-				</Box>
-			</Container>
+					<Box className={ classes.sidebar } component="aside">
+						<Fab
+							color="primary"
+							aria-label="add"
+							className={ classes.newEntryButton }
+							variant="extended"
+						>
+							Today
+							<AddIcon className={ classes.newEntryButtonIcon } />
+						</Fab>
+						<SidebarDates />
+					</Box>
+				</Container>
+			</DataLayer>
 		</ThemeProvider>
 	);
 }

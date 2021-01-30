@@ -2,22 +2,13 @@ import React from 'react';
 import {
 	CircularProgress,
 	createStyles,
-	IconButton,
 	List,
-	ListItem,
-	ListItemText,
-	ListSubheader,
 	makeStyles,
-	Paper,
 } from '@material-ui/core';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 
-import { useApiEntries } from 'components/data';
-import dayjs from 'dayjs';
-
-type SidebarDatesProps = {
-	onEntryClick: ( date: dayjs.Dayjs ) => void;
-};
+import { useStore } from 'components/data';
+import SidebarEntryHeader from './header';
+import SidebarEntry from './entry';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -35,47 +26,52 @@ const useStyles = makeStyles( ( theme ) =>
 	} )
 );
 
-export default function SidebarDates( { onEntryClick }: SidebarDatesProps ) {
-	const { data: dates, loading } = useApiEntries();
+export default function SidebarDates() {
+	const { loading, entries } = useStore();
 	const classes = useStyles();
 
-	if ( loading || ! Array.isArray( dates ) ) {
+	if ( loading ) {
 		return (
 			<div className={ classes.loading }>
 				<CircularProgress className={ classes.loading } />
 			</div>
 		);
 	}
-	if ( dates.length === 0 ) {
+	if ( entries.size === 0 ) {
 		return <p>No entries found!</p>;
 	}
 
+	const headerDateFormat = 'MMMM YYYY';
+	const sortedMonths = entries.groupBy( ( value, key ) => {
+		return key?.format( headerDateFormat );
+	} );
+
 	return (
-		<nav>
-			<List
-				subheader={
-					<ListSubheader
-						component={ Paper }
-						className={ classes.subheader }
-					>
-						<ListItemText
-							primary={ dates[ 0 ].format( 'MMMM YYYY' ) }
-						/>
-						<IconButton color="primary">
-							<CalendarTodayIcon />
-						</IconButton>
-					</ListSubheader>
-				}
-			>
-				{ dates.map( ( date ) => (
-					<ListItem button key={ date.toString() }>
-						<ListItemText
-							primary={ date.format( 'MM/DD/YYYY' ) }
-							onClick={ () => onEntryClick( date ) }
-						/>
-					</ListItem>
-				) ) }
-			</List>
-		</nav>
+		<List component="nav">
+			<ul>
+				{ sortedMonths
+					.map( ( monthEntries, monthString ) => (
+						<li key={ monthString }>
+							<SidebarEntryHeader
+								monthString={ monthString }
+								key={ monthString }
+							/>
+							{ monthEntries &&
+								monthEntries
+									.map(
+										( _entry, date ) =>
+											date && (
+												<SidebarEntry
+													key={ date.toString() }
+													date={ date }
+												/>
+											)
+									)
+									.toArray() }
+						</li>
+					) )
+					.toArray() }
+			</ul>
+		</List>
 	);
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
 import Editor from '@draft-js-plugins/editor';
 import createLinkifyPlugin from '@draft-js-plugins/linkify';
 import {
@@ -16,14 +15,11 @@ import {
 	Typography,
 } from '@material-ui/core';
 import 'draft-js/dist/Draft.css';
-
-import { useApiEntry } from 'components/data';
+import { useCurrentEntry } from 'components/data';
 
 type EntryEditorProps = {
-	date: dayjs.Dayjs;
 	className?: string;
 	placeholder?: string;
-	skipLoad?: boolean;
 };
 
 const useStyles = makeStyles( ( theme ) =>
@@ -44,23 +40,20 @@ const useStyles = makeStyles( ( theme ) =>
 export default function EntryEditor( {
 	className: addClassName,
 	placeholder,
-	date,
-	skipLoad = false,
 }: EntryEditorProps ) {
 	const classes = useStyles();
-	const { loading, data: entry } = useApiEntry( date );
+	const entry = useCurrentEntry();
 	const [ editorState, setEditorState ] = useState(
 		EditorState.createEmpty()
 	);
-	const entryExists = !! entry;
 	useEffect( () => {
-		if ( ! skipLoad && entry ) {
-			setEditorState( EditorState.createWithContent( entry ) );
+		if ( ! entry || 'error' in entry ) {
+			return;
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ entryExists, loading, date ] );
+		setEditorState( EditorState.createWithContent( entry ) );
+	}, [ entry ] );
 
-	if ( loading ) {
+	if ( ! entry ) {
 		return <CircularProgress />;
 	}
 
