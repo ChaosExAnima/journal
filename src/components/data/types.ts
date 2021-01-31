@@ -22,7 +22,7 @@ export type DataStore = {
 	loading: boolean;
 	currentDate: Dayjs;
 	entries: DataStoreEntries;
-	currentDraft?: ContentState;
+	currentDraft: ContentState | null;
 };
 
 export type DataStoreContext = DataStore & {

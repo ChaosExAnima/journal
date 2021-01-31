@@ -20,7 +20,7 @@ const defaultStore = (): DataStore => ( {
 	loading: false,
 	currentDate: dayjs(),
 	entries: Map(),
-	currentDraft: undefined,
+	currentDraft: null,
 } );
 
 export const DataContext = createContext< DataStoreContext >( {
@@ -42,6 +42,7 @@ export default class DataLayer extends Component<
 		this.loadEntries = this.loadEntries.bind( this );
 		this.loadEntry = this.loadEntry.bind( this );
 		this.updateEntry = debounce( this.updateEntry.bind( this ), 200 );
+		this.saveDraft = this.saveDraft.bind( this );
 	}
 
 	componentDidMount() {
@@ -52,21 +53,35 @@ export default class DataLayer extends Component<
 	async loadEntry( rawDate: Dayjs | Date ) {
 		const date = dayjs( rawDate );
 		const dateKey = date.format( APIDateFormat );
+
+		// First save the draft before switching.
+		if ( this.state.currentDraft ) {
+			this.saveDraft( this.state.currentDate, this.state.currentDraft );
+		}
+
+		// If it doesn't exist, switch to it and exit.
 		if ( ! this.state.entries.has( dateKey ) ) {
-			return this.setState( {
+			this.setState( {
 				...this.state,
 				currentDate: date,
 			} );
+			return;
 		}
-		this.setState( ( curStore ) => ( {
-			...curStore,
+
+		// Set entry to loading.
+		this.setState( {
+			...this.state,
 			currentDate: date,
 			entries: this.state.entries.set( dateKey, LoadingState ),
-		} ) );
+		} );
+
+		// Ensure we don't load this multiple times.
 		if ( this.loadedEntries.has( date ) ) {
 			return;
 		}
 		this.loadedEntries.add( date );
+
+		// Load and set the state based on error or success.
 		const rawEntry = await fetchData< RawDraftContentState >(
 			`entry?date=${ date.format( APIDateFormat ) }`
 		);
@@ -105,6 +120,9 @@ export default class DataLayer extends Component<
 	}
 
 	updateEntry( date: Dayjs, entry: ContentState ) {
+		if ( this.state.currentDraft && entry === this.state.currentDraft ) {
+			return;
+		}
 		saveData(
 			`entry?date=${ date.format( APIDateFormat ) }`,
 			convertToRaw( entry )
@@ -113,6 +131,17 @@ export default class DataLayer extends Component<
 				...this.state,
 				currentDraft: entry,
 			} );
+		} );
+	}
+
+	saveDraft( date: Dayjs, entry: ContentState ) {
+		this.setState( {
+			...this.state,
+			entries: this.state.entries.set(
+				date.format( APIDateFormat ),
+				entry
+			),
+			currentDraft: null,
 		} );
 	}
 
