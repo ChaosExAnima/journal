@@ -9,6 +9,11 @@ import {
 	useMediaQuery,
 	CssBaseline,
 } from '@material-ui/core';
+import {
+	BrowserRouter as Router,
+	useHistory,
+	useRouteMatch,
+} from 'react-router-dom';
 import { deepOrange, pink } from '@material-ui/core/colors';
 
 import EntryHeader from 'components/entry-header';
@@ -38,6 +43,18 @@ const useStyles = makeStyles( ( theme ) =>
 	} )
 );
 
+function FixPath() {
+	const isValidPath = useRouteMatch( {
+		path: [ '/', '/:year/:month/:day' ],
+		exact: true,
+	} );
+	const { replace } = useHistory();
+	if ( ! isValidPath ) {
+		replace( '/' );
+	}
+	return null;
+}
+
 function App( props: object ) {
 	const classes = useStyles( props );
 
@@ -58,17 +75,20 @@ function App( props: object ) {
 		<ThemeProvider theme={ theme }>
 			<DataLayer>
 				<CssBaseline />
-				<Container className={ classes.root }>
-					<Box className={ classes.main } component="main">
-						<EntryHeader />
-						<Box my={ 2 } maxWidth="50%">
-							<EntryError>
-								<EntryEditor placeholder="What happened to you today?" />
-							</EntryError>
+				<Router>
+					<Container className={ classes.root }>
+						<Box className={ classes.main } component="main">
+							<EntryHeader />
+							<Box my={ 2 } maxWidth="50%">
+								<EntryError>
+									<EntryEditor placeholder="What happened to you today?" />
+								</EntryError>
+							</Box>
 						</Box>
-					</Box>
-					<Sidebar className={ classes.sidebar } />
-				</Container>
+						<Sidebar className={ classes.sidebar } />
+						<FixPath />
+					</Container>
+				</Router>
 			</DataLayer>
 		</ThemeProvider>
 	);
