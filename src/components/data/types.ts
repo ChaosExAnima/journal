@@ -28,4 +28,5 @@ export type DataStore = {
 export type DataStoreContext = DataStore & {
 	loadEntry: ( date: Dayjs | Date ) => Promise< void >;
 	updateEntry: ( entry: ContentState ) => void;
+	saveDraft: () => void;
 };

@@ -27,6 +27,7 @@ export const DataContext = createContext< DataStoreContext >( {
 	...defaultStore(),
 	loadEntry: () => Promise.resolve(),
 	updateEntry: () => null,
+	saveDraft: () => null,
 } );
 
 export default class DataLayer extends Component<
@@ -56,7 +57,7 @@ export default class DataLayer extends Component<
 
 		// First save the draft before switching.
 		if ( this.state.currentDraft ) {
-			this.saveDraft( this.state.currentDate, this.state.currentDraft );
+			this.saveDraft( this.state.currentDate );
 		}
 
 		// If it doesn't exist, switch to it and exit.
@@ -120,9 +121,19 @@ export default class DataLayer extends Component<
 	}
 
 	updateEntry( date: Dayjs, entry: ContentState ) {
-		if ( this.state.currentDraft && entry === this.state.currentDraft ) {
+		const { currentDraft, entries } = this.state;
+		if ( currentDraft && entry === currentDraft ) {
 			return;
 		}
+
+		const dateKey = date.format( APIDateFormat );
+		if ( ! entries.has( dateKey ) && entry.hasText() ) {
+			this.setState( {
+				...this.state,
+				entries: entries.set( dateKey, null ),
+			} );
+		}
+
 		saveData(
 			`entry?date=${ date.format( APIDateFormat ) }`,
 			convertToRaw( entry )
@@ -134,12 +145,12 @@ export default class DataLayer extends Component<
 		} );
 	}
 
-	saveDraft( date: Dayjs, entry: ContentState ) {
+	saveDraft( date: Dayjs ) {
 		this.setState( {
 			...this.state,
 			entries: this.state.entries.set(
 				date.format( APIDateFormat ),
-				entry
+				this.state.currentDraft
 			),
 			currentDraft: null,
 		} );
@@ -151,7 +162,7 @@ export default class DataLayer extends Component<
 			loadEntry: this.loadEntry,
 			updateEntry: ( content: ContentState ) =>
 				this.updateEntry( this.state.currentDate, content ),
-			saveEntry: () => null,
+			saveDraft: () => this.saveDraft( this.state.currentDate ),
 			deleteEntry: () => null,
 		};
 

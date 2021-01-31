@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Editor from '@draft-js-plugins/editor';
 import createLinkifyPlugin from '@draft-js-plugins/linkify';
 import {
@@ -42,16 +42,23 @@ export default function EntryEditor( {
 }: EntryEditorProps ) {
 	const classes = useStyles();
 	const entry = useCurrentEntry();
-	const { currentDate: date, updateEntry } = useStore();
+	const { currentDate: date, updateEntry, currentDraft } = useStore();
 	const [ editorState, setEditorState ] = useState(
 		EditorState.createEmpty()
 	);
+	const editorRef = useRef< Editor >( null );
 	useEffect( () => {
 		if ( ! entry || entry === LoadingState || 'error' in entry ) {
 			return;
 		}
 		setEditorState( EditorState.createWithContent( entry ) );
 	}, [ entry, date ] );
+
+	useEffect( () => {
+		if ( ! currentDraft && editorState.getCurrentContent().hasText() ) {
+			editorRef.current?.focus();
+		}
+	}, [ currentDraft, editorState ] );
 
 	if ( entry === LoadingState ) {
 		return <Loading margin={ 4 } />;
@@ -85,6 +92,7 @@ export default function EntryEditor( {
 				handleKeyCommand={ handleKeyCommand }
 				placeholder={ placeholder }
 				plugins={ [ createLinkifyPlugin( { component: Link } ) ] }
+				ref={ editorRef }
 			/>
 		</Typography>
 	);
