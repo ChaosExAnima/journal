@@ -14,7 +14,8 @@ import {
 	useHistory,
 	useRouteMatch,
 } from 'react-router-dom';
-import { deepOrange, pink } from '@material-ui/core/colors';
+import { deepOrange } from '@material-ui/core/colors';
+import { enableMapSet } from 'immer';
 
 import EntryHeader from 'components/entry-header';
 import EntryEditor from 'components/entry-editor';
@@ -58,6 +59,8 @@ function FixPath() {
 	return null;
 }
 
+enableMapSet();
+
 function App( props: object ) {
 	const classes = useStyles( props );
 
@@ -68,7 +71,6 @@ function App( props: object ) {
 				palette: {
 					type: prefersDarkMode ? 'dark' : 'light',
 					primary: deepOrange,
-					secondary: pink,
 				},
 			} ),
 		[ prefersDarkMode ]

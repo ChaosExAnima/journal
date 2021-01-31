@@ -62,19 +62,21 @@ export default class DataLayer extends Component<
 
 		// If it doesn't exist, switch to it and exit.
 		if ( ! this.state.entries.has( dateKey ) ) {
-			this.setState( {
-				...this.state,
-				currentDate: date,
-			} );
+			this.setState(
+				produce( ( newState: DataStore ) => {
+					newState.currentDate = date;
+				} )
+			);
 			return;
 		}
 
 		// Set entry to loading.
-		this.setState( {
-			...this.state,
-			currentDate: date,
-			entries: this.state.entries.set( dateKey, LoadingState ),
-		} );
+		this.setState(
+			produce( ( newState: DataStore ) => {
+				newState.currentDate = date;
+				newState.entries.set( dateKey, LoadingState );
+			} )
+		);
 
 		// Ensure we don't load this multiple times.
 		if ( this.loadedEntries.has( date ) ) {
@@ -86,38 +88,45 @@ export default class DataLayer extends Component<
 		const rawEntry = await fetchData< RawDraftContentState >(
 			`entry?date=${ date.format( APIDateFormat ) }`
 		);
-		this.setState( ( curStore ) => ( {
-			...curStore,
-			entries: this.state.entries.set(
-				date.format( APIDateFormat ),
-				'error' in rawEntry ? rawEntry : convertFromRaw( rawEntry )
-			),
-		} ) );
+		this.setState(
+			produce( ( newStore: DataStore ) => {
+				newStore.entries = newStore.entries.set(
+					date.format( APIDateFormat ),
+					'error' in rawEntry ? rawEntry : convertFromRaw( rawEntry )
+				);
+			} )
+		);
 	}
 
 	async loadEntries() {
 		if ( this.state.loading || this.state.entries.size ) {
 			return;
 		}
-		this.setState( ( curState ) => ( { ...curState, loading: true } ) );
+		this.setState(
+			produce( ( newStore: DataStore ) => {
+				newStore.loading = true;
+			} )
+		);
 		const entryDates = await fetchData< string[] >( 'entries' );
 		if ( 'error' in entryDates ) {
-			return this.setState( ( curStore ) => ( {
-				...curStore,
-				loading: false,
-				hasError: true,
-			} ) );
+			return this.setState(
+				produce( ( newStore: DataStore ) => {
+					newStore.loading = false;
+					newStore.hasError = true;
+				} )
+			);
 		}
 		const parsedEntryDates: [ string, null ][] = entryDates
 			.sort()
 			.reverse()
 			.map( ( date ) => [ date, null ] );
 
-		this.setState( ( curStore ) => ( {
-			...curStore,
-			entries: new Map( parsedEntryDates ),
-			loading: false,
-		} ) );
+		this.setState(
+			produce( ( newStore: DataStore ) => {
+				newStore.entries = new Map( parsedEntryDates );
+				newStore.loading = false;
+			} )
+		);
 	}
 
 	updateEntry( date: Dayjs, entry: ContentState ) {
@@ -128,34 +137,35 @@ export default class DataLayer extends Component<
 
 		const dateKey = date.format( APIDateFormat );
 		if ( ! entries.has( dateKey ) && entry.hasText() ) {
-			this.setState( {
-				...this.state,
-				entries: produce( entries, ( draft ) =>
-					draft.set( dateKey, null )
-				),
-			} );
+			this.setState(
+				produce( ( newStore: DataStore ) => {
+					newStore.entries = newStore.entries.set( dateKey, null );
+				} )
+			);
 		}
 
 		saveData(
 			`entry?date=${ date.format( APIDateFormat ) }`,
 			convertToRaw( entry )
 		).then( () => {
-			this.setState( {
-				...this.state,
-				currentDraft: entry,
-			} );
+			this.setState(
+				produce( ( newStore: DataStore ) => {
+					newStore.currentDraft = entry;
+				} )
+			);
 		} );
 	}
 
 	saveDraft( date: Dayjs ) {
-		this.setState( {
-			...this.state,
-			entries: this.state.entries.set(
-				date.format( APIDateFormat ),
-				this.state.currentDraft
-			),
-			currentDraft: null,
-		} );
+		this.setState(
+			produce( ( newStore: DataStore ) => {
+				newStore.currentDraft = null;
+				newStore.entries = newStore.entries.set(
+					date.format( APIDateFormat ),
+					this.state.currentDraft
+				);
+			} )
+		);
 	}
 
 	render() {
