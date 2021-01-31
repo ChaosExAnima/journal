@@ -15,9 +15,10 @@ export default function SidebarEntry( { date }: { date?: Dayjs } ) {
 			button
 			key={ date.toString() }
 			selected={ date.isSame( currentDate, 'day' ) }
+			component="li"
 		>
 			<ListItemText
-				primary={ date.format( 'MM/DD/YYYY' ) }
+				primary={ date.format( 'M/D' ) }
 				onClick={ () => loadEntry( date ) }
 			/>
 		</ListItem>

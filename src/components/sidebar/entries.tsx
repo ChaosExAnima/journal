@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+	Box,
 	createStyles,
 	List,
 	ListItemText,
@@ -15,9 +16,12 @@ import Loading from 'components/loading';
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
 		root: {
-			position: 'relative',
-			overflow: 'auto',
-			maxHeight: '100vh',
+			position: 'absolute',
+			overflowY: 'scroll',
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0,
 		},
 		list: {
 			padding: 0,
@@ -62,31 +66,41 @@ export default function SidebarEntries() {
 						key={ dayjs( month ).unix() || 'unknown' }
 						className={ classes.months }
 					>
-						{ month && (
-							<ListSubheader className={ classes.subheader }>
-								<ListItemText
-									primary={ month.format( headerDateFormat ) }
-								/>
-							</ListSubheader>
-						) }
-						{ monthEntries
-							?.map( ( entry ) => {
-								if ( ! entry ) return null;
-								const entryDate = dayjs( entry );
-								return (
-									<SidebarEntry
-										key={ entryDate.unix() }
-										date={ entryDate }
+						<ol className={ classes.list }>
+							{ month && (
+								<ListSubheader className={ classes.subheader }>
+									<ListItemText
+										primary={ month.format(
+											headerDateFormat
+										) }
 									/>
-								);
-							} )
-							.valueSeq()
-							.toArray() }
+								</ListSubheader>
+							) }
+							{ monthEntries
+								?.map( ( entry ) => {
+									if ( ! entry ) return null;
+									const entryDate = dayjs( entry );
+									return (
+										<SidebarEntry
+											key={ entryDate.unix() }
+											date={ entryDate }
+										/>
+									);
+								} )
+								.valueSeq()
+								.toArray() }
+						</ol>
 					</li>
 				)
 		)
 		.valueSeq()
 		.toArray();
 
-	return <List subheader={ <li /> }>{ sortedMonths }</List>;
+	return (
+		<Box position="relative" height="100%" component="nav">
+			<List component="ol" className={ classes.root }>
+				{ sortedMonths }
+			</List>
+		</Box>
+	);
 }

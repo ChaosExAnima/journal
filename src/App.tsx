@@ -28,6 +28,7 @@ const useStyles = makeStyles( ( theme ) =>
 			marginTop: theme.spacing( 4 ),
 			display: 'flex',
 			flexDirection: 'row',
+			minHeight: `calc( 100vh - ${ theme.spacing( 4 ) }px )`,
 		},
 		main: {
 			order: 1,
@@ -36,11 +37,11 @@ const useStyles = makeStyles( ( theme ) =>
 			flexDirection: 'column',
 		},
 		sidebar: {
-			order: 0,
 			width: theme.breakpoints.values.sm / 3,
 			marginRight: theme.spacing( 2 ),
-			overflowY: 'auto',
 			flexShrink: 0,
+			top: theme.spacing( 4 ),
+			bottom: 0,
 		},
 	} )
 );
