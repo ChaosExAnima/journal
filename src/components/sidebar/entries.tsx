@@ -22,6 +22,7 @@ const useStyles = makeStyles( ( theme ) =>
 			bottom: 0,
 			left: 0,
 			right: 0,
+			paddingTop: 0,
 		},
 		list: {
 			padding: 0,
@@ -35,6 +36,7 @@ const useStyles = makeStyles( ( theme ) =>
 			backgroundColor: theme.palette.background.paper,
 			borderRadius: 0,
 			paddingRight: theme.spacing( 2 ) - 12,
+			boxShadow: theme.shadows[ 3 ],
 		},
 	} )
 );
