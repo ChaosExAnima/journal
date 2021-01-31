@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
 	Box,
 	createStyles,
@@ -8,9 +8,10 @@ import {
 	makeStyles,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
+import { groupBy, map, memoize } from 'lodash';
 
-import { useStore } from 'components/data';
 import SidebarEntry from './entry';
+import { useStore } from 'components/data';
 import Loading from 'components/loading';
 
 const useStyles = makeStyles( ( theme ) =>
@@ -52,51 +53,46 @@ export default function SidebarEntries() {
 		return <p>No entries found!</p>;
 	}
 
+	const toDayjs = memoize( ( date: string ) => dayjs( date ) );
 	const headerDateFormat = 'MMMM YYYY';
-	const sortedMonths = entries
-		.keySeq()
+	const sortedEntries = Array.from( entries.keys() )
 		.filter( Boolean )
 		.sort()
-		.reverse()
-		.groupBy( ( value ) => {
-			return !! value && dayjs( value ).set( 'date', 1 );
-		} )
-		.map(
-			( monthEntries, month ) =>
-				month && (
-					<li
-						key={ dayjs( month ).unix() || 'unknown' }
-						className={ classes.months }
-					>
-						<ol className={ classes.list }>
-							{ month && (
-								<ListSubheader className={ classes.subheader }>
-									<ListItemText
-										primary={ month.format(
-											headerDateFormat
-										) }
-									/>
-								</ListSubheader>
-							) }
-							{ monthEntries
-								?.map( ( entry ) => {
-									if ( ! entry ) return null;
-									const entryDate = dayjs( entry );
-									return (
-										<SidebarEntry
-											key={ entryDate.unix() }
-											date={ entryDate }
-										/>
-									);
-								} )
-								.valueSeq()
-								.toArray() }
-						</ol>
-					</li>
-				)
-		)
-		.valueSeq()
-		.toArray();
+		.reverse();
+	const sortedMonths: ReactNode[] = map(
+		groupBy( sortedEntries, ( value ) =>
+			dayjs( value ).set( 'date', 1 ).format( headerDateFormat )
+		),
+		( monthEntries, month ) =>
+			month && (
+				<li
+					key={ toDayjs( month ).unix() || 'unknown' }
+					className={ classes.months }
+				>
+					<ol className={ classes.list }>
+						{ month && (
+							<ListSubheader className={ classes.subheader }>
+								<ListItemText
+									primary={ toDayjs( month ).format(
+										headerDateFormat
+									) }
+								/>
+							</ListSubheader>
+						) }
+						{ monthEntries?.map( ( entry ) => {
+							if ( ! entry ) return null;
+							const entryDate = dayjs( entry );
+							return (
+								<SidebarEntry
+									key={ entryDate.unix() }
+									date={ entryDate }
+								/>
+							);
+						} ) }
+					</ol>
+				</li>
+			)
+	);
 
 	return (
 		<Box position="relative" height="100%" component="nav">

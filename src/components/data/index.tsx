@@ -6,8 +6,8 @@ import {
 	RawDraftContentState,
 } from 'draft-js';
 import dayjs, { Dayjs } from 'dayjs';
-import { OrderedMap as Map } from 'immutable';
-import { debounce } from 'ts-debounce';
+import produce from 'immer';
+import debounce from 'lodash/debounce';
 
 import type { DataStore, DataStoreContext, DataStoreEntry } from './types';
 import { fetchData, saveData } from './utils';
@@ -19,7 +19,7 @@ const defaultStore = (): DataStore => ( {
 	hasError: false,
 	loading: false,
 	currentDate: dayjs(),
-	entries: Map(),
+	entries: new Map(),
 	currentDraft: null,
 } );
 
@@ -108,14 +108,14 @@ export default class DataLayer extends Component<
 				hasError: true,
 			} ) );
 		}
-		const parsedEntryDates = entryDates
+		const parsedEntryDates: [ string, null ][] = entryDates
 			.sort()
 			.reverse()
 			.map( ( date ) => [ date, null ] );
 
 		this.setState( ( curStore ) => ( {
 			...curStore,
-			entries: Map( parsedEntryDates ),
+			entries: new Map( parsedEntryDates ),
 			loading: false,
 		} ) );
 	}
@@ -130,7 +130,9 @@ export default class DataLayer extends Component<
 		if ( ! entries.has( dateKey ) && entry.hasText() ) {
 			this.setState( {
 				...this.state,
-				entries: entries.set( dateKey, null ),
+				entries: produce( entries, ( draft ) =>
+					draft.set( dateKey, null )
+				),
 			} );
 		}
 

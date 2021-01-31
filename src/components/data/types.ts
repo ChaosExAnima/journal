@@ -1,6 +1,5 @@
 import type { Dayjs } from 'dayjs';
 import type { ContentState } from 'draft-js';
-import type { Map } from 'immutable';
 import type { LoadingState } from '.';
 
 export type APIQueryError = {
