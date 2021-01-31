@@ -70,7 +70,21 @@ server.get< GetEntry >( '/api/entry', async ( req, reply ) => {
 } );
 
 // Saves a journal entry.
-server.post( '/api/entry', async () => ( { success: true } ) );
+server.post< GetEntry >( '/api/entry', async ( req, reply ) => {
+	const { date } = req.query;
+	if ( ! date ) {
+		return reply
+			.code( 400 )
+			.send( new Error( 'Please provide an entry date' ) );
+	}
+
+	if ( ! /^\d{4}-\d{2}-\d{2}$/.test( date ) ) {
+		return reply.code( 400 ).send( new Error( 'Invalid entry date' ) );
+	}
+
+	console.log( req.body );
+	return reply.send( { success: true } );
+} );
 
 // Serves the built file for all other paths.
 server.get( '*', async ( req, reply ) => {

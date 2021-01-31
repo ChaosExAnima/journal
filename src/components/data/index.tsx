@@ -1,10 +1,16 @@
 import { Component, createContext, ReactNode, useContext } from 'react';
-import { ContentState, convertFromRaw, RawDraftContentState } from 'draft-js';
+import {
+	ContentState,
+	convertFromRaw,
+	convertToRaw,
+	RawDraftContentState,
+} from 'draft-js';
 import dayjs, { Dayjs } from 'dayjs';
 import { OrderedMap as Map } from 'immutable';
+import { debounce } from 'ts-debounce';
 
 import type { DataStore, DataStoreContext, DataStoreEntry } from './types';
-import { fetchData } from './utils';
+import { fetchData, saveData } from './utils';
 
 const APIDateFormat = 'YYYY-MM-DD';
 export const LoadingState = Symbol( 'loading state' );
@@ -14,11 +20,13 @@ const defaultStore = (): DataStore => ( {
 	loading: false,
 	currentDate: dayjs(),
 	entries: Map(),
+	currentDraft: undefined,
 } );
 
 export const DataContext = createContext< DataStoreContext >( {
 	...defaultStore(),
 	loadEntry: () => Promise.resolve(),
+	updateEntry: () => null,
 } );
 
 export default class DataLayer extends Component<
@@ -33,7 +41,7 @@ export default class DataLayer extends Component<
 		super( props );
 		this.loadEntries = this.loadEntries.bind( this );
 		this.loadEntry = this.loadEntry.bind( this );
-		this.updateEntry = this.updateEntry.bind( this );
+		this.updateEntry = debounce( this.updateEntry.bind( this ), 200 );
 	}
 
 	componentDidMount() {
@@ -96,13 +104,15 @@ export default class DataLayer extends Component<
 		} ) );
 	}
 
-	updateEntry( date: dayjs.Dayjs, entry: DataStoreEntry ) {
-		this.setState( {
-			...this.state,
-			entries: this.state.entries.set(
-				date.format( APIDateFormat ),
-				entry
-			),
+	updateEntry( date: Dayjs, entry: ContentState ) {
+		saveData(
+			`entry?date=${ date.format( APIDateFormat ) }`,
+			convertToRaw( entry )
+		).then( () => {
+			this.setState( {
+				...this.state,
+				currentDraft: entry,
+			} );
 		} );
 	}
 

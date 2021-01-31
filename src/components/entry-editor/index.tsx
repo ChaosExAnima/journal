@@ -10,7 +10,7 @@ import {
 import { createStyles, Link, makeStyles, Typography } from '@material-ui/core';
 import 'draft-js/dist/Draft.css';
 
-import { useCurrentEntry, LoadingState, useCurrentDate } from 'components/data';
+import { useCurrentEntry, LoadingState, useStore } from 'components/data';
 import Loading from 'components/loading';
 
 type EntryEditorProps = {
@@ -23,9 +23,12 @@ const useStyles = makeStyles( ( theme ) =>
 		root: {
 			fontSize: '1.2rem',
 			lineHeight: 1.8,
+			height: '100%',
+
 			'& .public-DraftEditorPlaceholder-root': {
 				color: theme.palette.text.secondary,
 			},
+
 			'& .MuiLink-root': {
 				cursor: 'pointer',
 			},
@@ -38,8 +41,8 @@ export default function EntryEditor( {
 	placeholder,
 }: EntryEditorProps ) {
 	const classes = useStyles();
-	const date = useCurrentDate();
 	const entry = useCurrentEntry();
+	const { currentDate: date, updateEntry } = useStore();
 	const [ editorState, setEditorState ] = useState(
 		EditorState.createEmpty()
 	);
@@ -54,6 +57,10 @@ export default function EntryEditor( {
 		return <Loading margin={ 4 } />;
 	}
 
+	const onChange = ( state: EditorState ) => {
+		updateEntry( state.getCurrentContent() );
+		setEditorState( state );
+	};
 	const handleKeyCommand = (
 		command: DraftEditorCommand,
 		newEditorState: EditorState
@@ -74,7 +81,7 @@ export default function EntryEditor( {
 		>
 			<Editor
 				editorState={ editorState }
-				onChange={ setEditorState }
+				onChange={ onChange }
 				handleKeyCommand={ handleKeyCommand }
 				placeholder={ placeholder }
 				plugins={ [ createLinkifyPlugin( { component: Link } ) ] }

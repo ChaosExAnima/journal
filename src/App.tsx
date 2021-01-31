@@ -32,6 +32,8 @@ const useStyles = makeStyles( ( theme ) =>
 		main: {
 			order: 1,
 			flexGrow: 1,
+			display: 'flex',
+			flexDirection: 'column',
 		},
 		sidebar: {
 			order: 0,
@@ -79,7 +81,7 @@ function App( props: object ) {
 					<Container className={ classes.root }>
 						<Box className={ classes.main } component="main">
 							<EntryHeader />
-							<Box my={ 2 } maxWidth="50%">
+							<Box my={ 2 } maxWidth="50%" flexGrow="1">
 								<EntryError>
 									<EntryEditor placeholder="What happened to you today?" />
 								</EntryError>
