@@ -93,7 +93,7 @@ server.post< GetEntry & PostEntry >( '/api/entry', async ( req, reply ) => {
 
 	let markdown: string;
 	try {
-		markdown = draftjsToMd( req.body );
+		markdown = draftjsToMd( req.body ).trim();
 	} catch ( err ) {
 		console.error( err );
 		return reply.code( 400 ).send( new Error( 'Invalid state object' ) );
