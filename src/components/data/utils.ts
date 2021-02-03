@@ -16,6 +16,9 @@ export async function saveData( path: string, data: any ) {
 		const response = await fetch( `http://localhost:3002/api/${ path }`, {
 			method: 'POST',
 			body: JSON.stringify( data ),
+			headers: {
+				'Content-Type': 'application/json',
+			},
 		} );
 		return response.json();
 	} catch ( error ) {

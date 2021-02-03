@@ -1,7 +1,8 @@
 import fastify from 'fastify';
 import { resolve } from 'path';
 import { promises as fs } from 'fs';
-import { mdToDraftjs } from 'draftjs-md-converter';
+import { draftjsToMd, mdToDraftjs } from 'draftjs-md-converter';
+import { RawDraftContentState } from 'draft-js';
 
 import { version } from '../package.json';
 
@@ -42,6 +43,10 @@ type GetEntry = {
 	};
 };
 
+type PostEntry = {
+	Body?: RawDraftContentState;
+};
+
 // Serve entry in format that Draft.js can understand.
 server.get< GetEntry >( '/api/entry', async ( req, reply ) => {
 	const { date } = req.query;
@@ -70,7 +75,7 @@ server.get< GetEntry >( '/api/entry', async ( req, reply ) => {
 } );
 
 // Saves a journal entry.
-server.post< GetEntry >( '/api/entry', async ( req, reply ) => {
+server.post< GetEntry & PostEntry >( '/api/entry', async ( req, reply ) => {
 	const { date } = req.query;
 	if ( ! date ) {
 		return reply
@@ -82,7 +87,33 @@ server.post< GetEntry >( '/api/entry', async ( req, reply ) => {
 		return reply.code( 400 ).send( new Error( 'Invalid entry date' ) );
 	}
 
-	console.log( req.body );
+	if ( ! req.body ) {
+		return reply.code( 400 ).send( new Error( 'Requires body' ) );
+	}
+
+	let markdown: string;
+	try {
+		markdown = draftjsToMd( req.body );
+	} catch ( err ) {
+		console.error( err );
+		return reply.code( 400 ).send( new Error( 'Invalid state object' ) );
+	}
+
+	if ( ! markdown ) {
+		return reply
+			.code( 400 )
+			.send( new Error( 'Cannot save empty journal entry' ) );
+	}
+
+	try {
+		await fs.writeFile( resolve( entriesDir, `${ date }.md` ), markdown, {
+			encoding: 'utf-8',
+		} );
+	} catch ( err ) {
+		console.error( err );
+		return reply.code( 500 ).send( new Error( 'Cannot save file' ) );
+	}
+
 	return reply.send( { success: true } );
 } );
 

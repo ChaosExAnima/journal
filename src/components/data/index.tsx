@@ -42,6 +42,7 @@ export default class DataLayer extends Component<
 		super( props );
 		this.loadEntries = this.loadEntries.bind( this );
 		this.loadEntry = this.loadEntry.bind( this );
+		// @ts-ignore
 		this.updateEntry = debounce( this.updateEntry.bind( this ), 200 );
 		this.saveDraft = this.saveDraft.bind( this );
 	}
@@ -61,13 +62,15 @@ export default class DataLayer extends Component<
 		}
 
 		// If it doesn't exist, switch to it and exit.
-		if ( ! this.state.entries.has( dateKey ) ) {
-			this.setState(
+		if (
+			! this.state.entries.has( dateKey ) &&
+			! this.state.currentDate.isSame( date, 'day' )
+		) {
+			return this.setState(
 				produce( ( newState: DataStore ) => {
 					newState.currentDate = date;
 				} )
 			);
-			return;
 		}
 
 		// Set entry to loading.
@@ -129,7 +132,7 @@ export default class DataLayer extends Component<
 		);
 	}
 
-	updateEntry( date: Dayjs, entry: ContentState ) {
+	async updateEntry( date: Dayjs, entry: ContentState ) {
 		const { currentDraft, entries } = this.state;
 		if ( currentDraft && entry === currentDraft ) {
 			return;
@@ -144,16 +147,17 @@ export default class DataLayer extends Component<
 			);
 		}
 
-		saveData(
-			`entry?date=${ date.format( APIDateFormat ) }`,
-			convertToRaw( entry )
-		).then( () => {
-			this.setState(
-				produce( ( newStore: DataStore ) => {
-					newStore.currentDraft = entry;
-				} )
+		if ( entry.hasText() ) {
+			await saveData(
+				`entry?date=${ date.format( APIDateFormat ) }`,
+				convertToRaw( entry )
 			);
-		} );
+		}
+		this.setState(
+			produce( ( newStore: DataStore ) => {
+				newStore.currentDraft = entry;
+			} )
+		);
 	}
 
 	saveDraft( date: Dayjs ) {
