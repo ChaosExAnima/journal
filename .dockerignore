@@ -1,0 +1,7 @@
+.*
+*.log
+*.md
+node_modules
+Dockerfile
+build
+!.env.production

@@ -10,7 +10,8 @@ import {
 import { createStyles, Link, makeStyles, Typography } from '@material-ui/core';
 import 'draft-js/dist/Draft.css';
 
-import { useCurrentEntry, LoadingState, useStore } from 'components/data';
+import { useCurrentEntry, useStore } from 'components/data/hooks';
+import { LoadingState } from 'components/data/constants';
 import Loading from 'components/loading';
 
 type EntryEditorProps = {

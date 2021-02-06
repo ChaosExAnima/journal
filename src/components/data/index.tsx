@@ -1,4 +1,4 @@
-import { Component, createContext, ReactNode, useContext } from 'react';
+import { Component, ReactNode } from 'react';
 import {
 	ContentState,
 	convertFromRaw,
@@ -9,32 +9,22 @@ import dayjs, { Dayjs } from 'dayjs';
 import produce from 'immer';
 import debounce from 'lodash/debounce';
 
-import type { DataStore, DataStoreContext, DataStoreEntry } from './types';
 import { fetchData, saveData } from './utils';
+import { APIDateFormat, DataContext, LoadingState } from './constants';
 
-const APIDateFormat = 'YYYY-MM-DD';
-export const LoadingState = Symbol( 'loading state' );
-
-const defaultStore = (): DataStore => ( {
-	hasError: false,
-	loading: false,
-	currentDate: dayjs(),
-	entries: new Map(),
-	currentDraft: null,
-} );
-
-export const DataContext = createContext< DataStoreContext >( {
-	...defaultStore(),
-	loadEntry: () => Promise.resolve(),
-	updateEntry: () => null,
-	saveDraft: () => null,
-} );
+import type { DataStore } from './types';
 
 export default class DataLayer extends Component<
 	{ children: ReactNode },
 	DataStore
 > {
-	state: DataStore = defaultStore();
+	state: DataStore = {
+		hasError: false,
+		loading: false,
+		currentDate: dayjs(),
+		entries: new Map(),
+		currentDraft: null,
+	};
 
 	loadedEntries = new Set< Dayjs >();
 
@@ -188,19 +178,4 @@ export default class DataLayer extends Component<
 			</DataContext.Provider>
 		);
 	}
-}
-
-export function useStore(): DataStoreContext {
-	const store = useContext( DataContext );
-	return store;
-}
-
-export function useCurrentDate(): Dayjs {
-	const { currentDate } = useStore();
-	return currentDate;
-}
-
-export function useCurrentEntry(): DataStoreEntry {
-	const store = useStore();
-	return store.entries.get( store.currentDate.format( APIDateFormat ) );
 }

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { lazy, useMemo } from 'react';
 import {
 	makeStyles,
 	createStyles,
@@ -17,11 +17,7 @@ import {
 import { deepOrange } from '@material-ui/core/colors';
 import { enableMapSet } from 'immer';
 
-import EntryHeader from 'components/entry-header';
-import EntryEditor from 'components/entry-editor';
 import EntryError from 'components/entry-editor/error';
-import DataLayer from 'components/data';
-import Sidebar from 'components/sidebar';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
@@ -75,6 +71,11 @@ function App( props: object ) {
 			} ),
 		[ prefersDarkMode ]
 	);
+
+	const DataLayer = lazy( () => import( 'components/data' ) );
+	const EntryEditor = lazy( () => import( 'components/entry-editor' ) );
+	const EntryHeader = lazy( () => import( 'components/entry-header' ) );
+	const Sidebar = lazy( () => import( 'components/sidebar' ) );
 
 	return (
 		<ThemeProvider theme={ theme }>

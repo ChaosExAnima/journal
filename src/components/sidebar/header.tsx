@@ -2,7 +2,7 @@ import React from 'react';
 import { IconButton, ListItemText, ListSubheader } from '@material-ui/core';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 
-import { useStore } from 'components/data';
+import { useStore } from 'components/data/hooks';
 
 type EntryHeaderProps = {
 	monthString?: string;

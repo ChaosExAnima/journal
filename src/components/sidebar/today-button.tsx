@@ -1,5 +1,5 @@
 import { createStyles, Fab, makeStyles } from '@material-ui/core';
-import { useStore } from 'components/data';
+import { useStore } from 'components/data/hooks';
 import React from 'react';
 import AddIcon from '@material-ui/icons/Add';
 

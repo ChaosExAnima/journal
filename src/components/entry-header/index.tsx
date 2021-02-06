@@ -8,7 +8,7 @@ import {
 import React from 'react';
 import SaveIcon from '@material-ui/icons/Save';
 
-import { useStore } from 'components/data';
+import { useStore } from 'components/data/hooks';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {

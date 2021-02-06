@@ -1,6 +1,6 @@
 import type { Dayjs } from 'dayjs';
 import type { ContentState } from 'draft-js';
-import type { LoadingState } from '.';
+import type { LoadingState } from './constants';
 
 export type APIQueryError = {
 	error: string;

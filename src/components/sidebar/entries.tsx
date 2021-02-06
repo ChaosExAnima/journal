@@ -8,10 +8,12 @@ import {
 	makeStyles,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
-import { groupBy, map, memoize } from 'lodash';
+import groupBy from 'lodash/groupBy';
+import map from 'lodash/map';
+import memoize from 'lodash/memoize';
 
 import SidebarEntry from './entry';
-import { useStore } from 'components/data';
+import { useStore } from 'components/data/hooks';
 import Loading from 'components/loading';
 
 const useStyles = makeStyles( ( theme ) =>

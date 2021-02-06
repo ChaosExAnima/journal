@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListItem, ListItemText } from '@material-ui/core';
 
-import { useStore } from 'components/data';
+import { useStore } from 'components/data/hooks';
 
 import type { Dayjs } from 'dayjs';
 
