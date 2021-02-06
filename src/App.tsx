@@ -9,11 +9,7 @@ import {
 	useMediaQuery,
 	CssBaseline,
 } from '@material-ui/core';
-import {
-	BrowserRouter as Router,
-	useHistory,
-	useRouteMatch,
-} from 'react-router-dom';
+import { useHistory, useRouteMatch, BrowserRouter as Router } from 'react-router-dom';
 import { deepOrange } from '@material-ui/core/colors';
 import { enableMapSet } from 'immer';
 
@@ -22,6 +18,7 @@ import EntryEditor from 'components/entry-editor';
 import EntryError from 'components/entry-editor/error';
 import DataLayer from 'components/data';
 import Sidebar from 'components/sidebar';
+// import Router from 'components/router';
 
 const useStyles = makeStyles( ( theme ) =>
 	createStyles( {
